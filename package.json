@@ -2,6 +2,10 @@
   "name": "cyboard-bahn-widget",
   "version": "0.0.1",
   "description": "Cyboard Widget to display arrival times of the Deutsche Bahn",
+  "license": "MIT",
+  "author": "Niklas Köhler <kontakt@niklaskoehler.de>",
+  "website": "http://www.niklaskoehler.de",
+  "repository": "nikflip/cyboard-bahn",
   "main": "index.js",
   "dependencies": {
     "async": "^0.9.0",
@@ -12,8 +16,5 @@
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "Niklas Köhler <kontakt@niklaskoehler.de>",
-  "website": "http://www.niklaskoehler.de",
-  "license": "ISC"
+  }
 }
