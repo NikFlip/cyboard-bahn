@@ -1,0 +1,10 @@
+<div>
+    <div ng-repeat="arrival in arrivals | orderBy:'time'" class="row">
+        <div class="cell">{{ arrival.time | date:'HH:mm' }} Uhr</div>
+        <div class="cell">{{ arrival.start }}</div>
+        <div class="cell">{{ arrival.direction }}</div>
+        <div class="cell" ng-class="{'delayed': arrival.delay > 0}">
+            <ng-pluralize count="arrival.delay" when="{0: 'Pünktlich', 1: 'Eine Minute', 'other': '{} Minuten'}"></ng-pluralize>
+        </div>
+    </div>
+</div>
