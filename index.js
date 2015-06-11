@@ -25,9 +25,10 @@ module.exports = function(widgets, templates, styles) {
 
             Q.all(promises).then(function(results) {
                 emitter.emit('data', {arrivals: _.flatten(results)});
-            })
 
-            setTimeout(go, options.interval || 15 * 60000)
+                setTimeout(go, options.interval || 15 * 60000);
+            });
+
         }
 
         process.nextTick(go);
