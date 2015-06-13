@@ -1,6 +1,6 @@
 {
   "name": "cyboard-bahn-widget",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Cyboard Widget to display arrival times of the Deutsche Bahn",
   "license": "MIT",
   "author": "Niklas Köhler <kontakt@niklaskoehler.de>",
