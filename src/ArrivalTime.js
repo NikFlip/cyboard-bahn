@@ -13,8 +13,6 @@ function ArrivalTime (station, targets) {
     this.station = station;
 
     this.targets = this.tidyUp(targets);
-
-    this.deferred = Q.defer();
 }
 
 ArrivalTime.prototype.tidyUp = function(stations) {
@@ -40,7 +38,7 @@ ArrivalTime.prototype.getResults = function() {
         url = this.buildUrl(),
         results = [],
         targets = this.targets,
-        deferred = this.deferred;
+        deferred = Q.defer();
 
     jsdom.env(
         url,
