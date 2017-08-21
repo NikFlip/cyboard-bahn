@@ -1,6 +1,6 @@
-var jsdom = require("jsdom"),
-    _ = require('underscore'),
-    Q = require('q');
+var JSDOM = require("jsdom").JSDOM;
+var _ = require('underscore');
+var Q = require('q');
 
 module.exports = ArrivalTime;
 
@@ -40,23 +40,25 @@ ArrivalTime.prototype.getResults = function() {
         targets = this.targets,
         deferred = Q.defer();
 
-    jsdom.env(
-        url,
-        ["http://code.jquery.com/jquery.js"],
-        function (errors, window) {
-            var $ = window.$;
+    JSDOM
+        .fromURL(url)
+        .then(function (dom) {
+            dom.window.document
+                .querySelectorAll('[id^="journeyRow"]')
+                .forEach(function (row) {
+                    var link = row.querySelector('.route .bold a');
+                    var text = link.textContent.trim().toLowerCase();
 
-            $('[id^="journeyRow"]').each(function() {
-                var text = $(this).find('.route .bold a').text().trim().toLowerCase().trim();
-                
-                if (_.contains(targets, text)) {
-                    results.push(self.validateResult($(this)));
-                }
-            });
+                    if (_.contains(targets, text)) {
+                        results.push(self.validateResult(row));
+                    }
+                });
 
             deferred.resolve(results);
-        }
-    );
+        })
+        .catch(function (e) {
+            console.error(e.message || e);
+        });
 
     return deferred.promise;
 };
@@ -64,19 +66,18 @@ ArrivalTime.prototype.getResults = function() {
 ArrivalTime.prototype.validateResult = function(result) {
 
     var date = new Date(),
-        time = result.find('.time').text().trim().split(':'),
+        time = result.querySelector('.time').textContent.trim().split(':'),
         start = this.station;
 
         date.setHours(time[0]);
         date.setMinutes(time[1]);
 
-    var results = {
+    return {
         time: date,
-        name: result.find('.train + .train a').text().trim().replace(/      /g, ' '),
+        name: result.querySelector('.train + .train a').textContent.trim().replace(/      /g, ' '),
         start: start,
-        direction: result.find('.route .bold a').text().trim(),
-        delay: parseInt(result.find('.ris span:first').text(), 10) || 0
+        direction: result.querySelector('.route .bold a').textContent.trim(),
+        delay: parseInt(result.querySelector('.ris span').textContent, 10) || 0
     };
-    return results;
 };
 
