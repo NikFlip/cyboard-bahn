@@ -28,9 +28,10 @@ ArrivalTime.prototype.tidyUp = function(stations) {
 ArrivalTime.prototype.buildUrl = function() {
     var date = new Date(),
         hour = date.getHours(),
-        minute = date.getMinutes();
+        minute = date.getMinutes(),
+        url = 'http://reiseauskunft.bahn.de/bin/bhftafel.exe/dn?country=DEU&rt=1&input=' + this.station + '&start=1&time=' + hour + ':' + minute;
 
-    return 'http://reiseauskunft.bahn.de/bin/bhftafel.exe/dn?country=DEU&rt=1&input=' + this.station + '&start=1&time=' + hour + ':' + minute;
+    return url;
 }
 
 ArrivalTime.prototype.getResults = function() {
@@ -47,10 +48,12 @@ ArrivalTime.prototype.getResults = function() {
                 .querySelectorAll('[id^="journeyRow"]')
                 .forEach(function (row) {
                     var link = row.querySelector('.route .bold a');
-                    var text = link.textContent.trim().toLowerCase();
+                    if (link.textContent) {
+                        var text = link.textContent.trim().toLowerCase();
 
-                    if (_.contains(targets, text)) {
-                        results.push(self.validateResult(row));
+                        if (_.contains(targets, text)) {
+                            results.push(self.validateResult(row));
+                        }
                     }
                 });
 
@@ -67,17 +70,23 @@ ArrivalTime.prototype.validateResult = function(result) {
 
     var date = new Date(),
         time = result.querySelector('.time').textContent.trim().split(':'),
-        start = this.station;
+        start = this.station.replace(/%.*$/, ''),
+        name = '',
+        direction = '',
+        delay = '';
 
-        date.setHours(time[0]);
-        date.setMinutes(time[1]);
+    if (result.querySelector('.train + .train a')) name = result.querySelector('.train + .train a').textContent;
+    if (result.querySelector('.route .bold a')) direction = result.querySelector('.route .bold a').textContent;
+    if (result.querySelector('.ris span')) delay = result.querySelector('.ris span').textContent;
+
+    date.setHours(time[0]);
+    date.setMinutes(time[1]);
 
     return {
         time: date,
-        name: result.querySelector('.train + .train a').textContent.trim().replace(/      /g, ' '),
+        name: name.trim().replace(/      /g, ' '),
         start: start,
-        direction: result.querySelector('.route .bold a').textContent.trim(),
-        delay: parseInt(result.querySelector('.ris span').textContent, 10) || 0
+        direction: direction.trim(),
+        delay: parseInt(delay, 10) || 0
     };
 };
-
